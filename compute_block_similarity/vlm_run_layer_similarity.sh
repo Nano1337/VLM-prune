@@ -7,5 +7,5 @@ python vlm_layer_similarity.py --model_path "clip-flant5-xxl" \
                       --batch_size 17 \
                       --max_length 1024 \
                       --layers_to_skip 10 \
-                      --dataset_size 10000 \
+                      --dataset_size 9000 \
                       --dataset_subset "train" 
