@@ -3,3 +3,6 @@ datasets
 accelerate
 bitsandbytes
 torch
+sentencepiece
+Pillow
+ujson
