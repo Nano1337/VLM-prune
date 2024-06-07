@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from compute_block_similarity.clip_t5_model import CLIPT5Model
 
-parquet_file_path = "data/sampled_datacomp/tenk_dataset.parquet"
+parquet_file_path = "/home/haoli/VLM-prune/tenk_filtered.parquet"
 image_dir = "data/sampled_datacomp/sampled_datacomp_images"
 
 class TenkDataset(Dataset):
@@ -31,7 +31,7 @@ batch_size = 24
 
 dataset = TenkDataset()
 loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-model = CLIPT5Model(calc_score=True)
+model = CLIPT5Model(calc_score=True, model_name="clip-flant5") # change to xxl for 11B model
 
 results = []
 
@@ -58,7 +58,7 @@ for batch in tqdm(loader, desc="Processing batches", unit="batch"):
 df = pd.DataFrame(results, columns=['uid', 'VQAscore'])
 
 # Save the DataFrame to a Parquet file
-df.to_parquet('vqa_scores.parquet', index=False)
+df.to_parquet('vqa_scores_3B.parquet', index=False) # CHANGE: output results path
 
 """
 Known Issues: 

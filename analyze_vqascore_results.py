@@ -2,7 +2,7 @@
 import pandas as pd
 
 # Load the parquet file into a DataFrame
-df = pd.read_parquet('vqa_scores.parquet')
+df = pd.read_parquet('vqa_scores_3B.parquet')
 
 # Delete rows where the VQAscore is -1
 df = df[df['VQAscore'] != -1]
@@ -20,11 +20,11 @@ import matplotlib.pyplot as plt
 plt.hist(df_valid_sorted['VQAscore'], bins=[i * 0.02 for i in range(51)], range=(0.0, 1.0), edgecolor='black')
 plt.xlabel('VQAscore')
 plt.ylabel('Frequency')
-plt.title('Histogram of VQAscore for 10k samples')
+plt.title('Histogram of VQAscore (3B) for 10k samples')
 plt.grid(True)
 
 # Save the histogram as a PNG file
-plt.savefig('vqa_scores_histogram_10k.png')
+plt.savefig('vqa_scores_3B_histogram_10k.png')
 plt.close()
 
 # Plot histogram for the top 30% VQAscores
@@ -36,32 +36,32 @@ print(f"Number of rows in top 30%: {len(df_top_30_percent)}")
 plt.hist(df_top_30_percent['VQAscore'], bins=[i * 0.02 for i in range(51)], range=(0.0, 1.0), edgecolor='black')
 plt.xlabel('VQAscore')
 plt.ylabel('Frequency')
-plt.title('Histogram of Top 30% VQAscore for 10k samples')
+plt.title('Histogram of Top 30% VQAscore (3B) for 10k samples')
 plt.grid(True)
 
 # Save the histogram as a PNG file
-plt.savefig('vqa_scores_histogram_top_30_percent_10k.png')
+plt.savefig('vqa_scores_3B_histogram_top_30_percent_10k.png')
 plt.close()
 
-# save filtered
-df_valid_sorted.to_parquet('vqa_scores_valid_sorted.parquet', index=False) 
+# # save filtered
+# df_valid_sorted.to_parquet('vqa_scores_valid_sorted.parquet', index=False) 
 
-og_parquet_file_path = "data/sampled_datacomp/tenk_dataset.parquet"
-og_unfiltered_df = pd.read_parquet(og_parquet_file_path)
+# og_parquet_file_path = "data/sampled_datacomp/tenk_dataset.parquet"
+# og_unfiltered_df = pd.read_parquet(og_parquet_file_path)
 
-# Find the intersection of uids between og_unfiltered_df and df_valid_sorted
-intersection_uids = set(og_unfiltered_df['uid']).intersection(set(df_valid_sorted['uid']))
+# # Find the intersection of uids between og_unfiltered_df and df_valid_sorted
+# intersection_uids = set(og_unfiltered_df['uid']).intersection(set(df_valid_sorted['uid']))
 
-# Filter both DataFrames to only keep rows with uids in the intersection
-og_filtered_df = og_unfiltered_df[og_unfiltered_df['uid'].isin(intersection_uids)]
-df_valid_sorted = df_valid_sorted[df_valid_sorted['uid'].isin(intersection_uids)]
+# # Filter both DataFrames to only keep rows with uids in the intersection
+# og_filtered_df = og_unfiltered_df[og_unfiltered_df['uid'].isin(intersection_uids)]
+# df_valid_sorted = df_valid_sorted[df_valid_sorted['uid'].isin(intersection_uids)]
 
-# Print the number of rows in the intersection
-print(f"Number of rows in the intersection (sanity check): {len(intersection_uids)}")
-assert len(intersection_uids) == len(og_filtered_df) == len(df_valid_sorted)
+# # Print the number of rows in the intersection
+# print(f"Number of rows in the intersection (sanity check): {len(intersection_uids)}")
+# assert len(intersection_uids) == len(og_filtered_df) == len(df_valid_sorted)
 
-# save filtered data to parquet
-og_filtered_df.to_parquet('tenk_filtered.parquet', index=False)
+# # save filtered data to parquet
+# og_filtered_df.to_parquet('tenk_filtered.parquet', index=False)
 
 # # show the first 10 rows of the filtered data
 # print(og_filtered_df.head(10))
