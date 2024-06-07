@@ -3,7 +3,7 @@ import os
 
 import torch
 from transformers import AutoTokenizer
-from constants import HF_CACHE_DIR, IMAGE_TOKEN_INDEX
+from compute_block_similarity.constants import HF_CACHE_DIR, IMAGE_TOKEN_INDEX
 
 
 def expand2square(pil_img, background_color):

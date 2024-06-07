@@ -3,10 +3,10 @@ import torch
 from abc import abstractmethod
 import os
 
-from mm_utils import expand2square, load_pretrained_model, t5_tokenizer_image_token
-from constants import HF_CACHE_DIR, CONTEXT_LEN, SYSTEM_MSG, DEFAULT_IMAGE_TOKEN, IGNORE_INDEX
-from clip_t5.model import CLIPT5ForConditionalGeneration, ModelArguments
-from model import ScoreModel
+from compute_block_similarity.mm_utils import expand2square, load_pretrained_model, t5_tokenizer_image_token
+from compute_block_similarity.constants import HF_CACHE_DIR, CONTEXT_LEN, SYSTEM_MSG, DEFAULT_IMAGE_TOKEN, IGNORE_INDEX
+from compute_block_similarity.clip_t5.model import CLIPT5ForConditionalGeneration, ModelArguments
+from compute_block_similarity.model import ScoreModel
 
 default_question_template = 'Does this figure show "{}"? Please answer yes or no.'
 default_answer_template = "Yes" # for disagreement, use "No"
@@ -189,11 +189,13 @@ class CLIPT5Model(VQAScoreModel):
     def __init__(self,
                  model_name='clip-flant5-xxl',
                  device='cuda',
-                 cache_dir=HF_CACHE_DIR):
+                 cache_dir=HF_CACHE_DIR, 
+                 calc_score=False):
         assert model_name in CLIP_T5_MODELS
         super().__init__(model_name=model_name,
                          device=device,
                          cache_dir=cache_dir)
+        self.calc_score = calc_score
 
     def load_model(self):
         """Load the model, tokenizer, image transform
@@ -309,12 +311,13 @@ class CLIPT5Model(VQAScoreModel):
             **model_input_kwargs
         )
 
-        # # VQAScore calculation here but we don't want that for now 
-        # logits = outputs.logits
-        # lm_prob = torch.zeros(logits.shape[0])
-        # loss_fct = torch.nn.CrossEntropyLoss(reduction='mean')
-        # for k in range(lm_prob.shape[0]):
-        #     lm_prob[k] = (-loss_fct(logits[k], labels[k])).exp() # exp to cancel the log and get raw prob between 0 and 1
-        # return lm_prob
+        if self.calc_score:
+            # VQAScore calculation here 
+            logits = outputs.logits
+            lm_prob = torch.zeros(logits.shape[0])
+            loss_fct = torch.nn.CrossEntropyLoss(reduction='mean')
+            for k in range(lm_prob.shape[0]):
+                lm_prob[k] = (-loss_fct(logits[k], labels[k])).exp() # exp to cancel the log and get raw prob between 0 and 1
+            return lm_prob
         
         return outputs, decoder_attention_mask

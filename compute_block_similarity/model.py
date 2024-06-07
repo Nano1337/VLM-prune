@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from PIL import Image
     
-from constants import HF_CACHE_DIR
+from compute_block_similarity.constants import HF_CACHE_DIR
 
 def image_loader(image_path):
     if image_path.split('.')[-1] == 'npy':
